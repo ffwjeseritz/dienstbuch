@@ -108,21 +108,29 @@ async function sha256(str) {
 }
 
 const TYPES = {
-  uebung:      "Übungsdienst",
-  versammlung: "Dienstversammlung",
-  osisau:      "OSiSau",
-  jfw:         "JFW",
-  kifeu:       "Kifeu",
-  sonstiges:   "Sonstiges",
+  uebung:       "Übungsdienst",
+  versammlung:  "Dienstversammlung",
+  osisau:       "OSiSau",
+  jfw:          "JFW",
+  kifeu:        "Kifeu",
+  veranstaltung:"Veranstaltung",
+  getraenke:    "Getränke",
+  lehrgang:     "Lehrgang",
+  wettkampf:    "Wettkampfgruppe",
+  sonstiges:    "Sonstiges",
 };
 
 const TYPE_META = {
-  uebung:      { color: "#1355A8", bg: "#EFF4FF", label: "Übungsdienst" },
-  versammlung: { color: "#6B21A8", bg: "#F5F0FF", label: "Dienstversammlung" },
-  osisau:      { color: "#166534", bg: "#ECFDF5", label: "OSiSau" },
-  jfw:         { color: "#B45309", bg: "#FFFBEB", label: "JFW" },
-  kifeu:       { color: "#0E7490", bg: "#ECFEFF", label: "Kifeu" },
-  sonstiges:   { color: "#57534E", bg: "#F5F5F4", label: "Sonstiges" },
+  uebung:       { color: "#1355A8", bg: "#EFF4FF", label: "Übungsdienst" },
+  versammlung:  { color: "#6B21A8", bg: "#F5F0FF", label: "Dienstversammlung" },
+  osisau:       { color: "#166534", bg: "#ECFDF5", label: "OSiSau" },
+  jfw:          { color: "#B45309", bg: "#FFFBEB", label: "JFW" },
+  kifeu:        { color: "#0E7490", bg: "#ECFEFF", label: "Kifeu" },
+  veranstaltung:{ color: "#BE185D", bg: "#FDF2F8", label: "Veranstaltung" },
+  getraenke:    { color: "#A16207", bg: "#FEFCE8", label: "Getränke" },
+  lehrgang:     { color: "#B91C1C", bg: "#FEF2F2", label: "Lehrgang" },
+  wettkampf:    { color: "#3730A3", bg: "#EEF2FF", label: "Wettkampfgruppe" },
+  sonstiges:    { color: "#57534E", bg: "#F5F5F4", label: "Sonstiges" },
 };
 
 function generateId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
@@ -192,7 +200,7 @@ function exportEventToExcel(ev, members) {
   const responsible = ev.responsible ? members.find(m => m.id === ev.responsible) : null;
   const typeLabels = {
     uebung: "Übungsdienst", versammlung: "Dienstversammlung", osisau: "OSiSau",
-    jfw: "JFW", kifeu: "KiFeu", sonstiges: "Sonstiges",
+    jfw: "JFW", kifeu: "KiFeu", veranstaltung: "Veranstaltung", getraenke: "Getränke", lehrgang: "Lehrgang", wettkampf: "Wettkampfgruppe", sonstiges: "Sonstiges",
   };
 
   const infoRows = [
@@ -222,7 +230,7 @@ function exportEventToExcel(ev, members) {
 
 function exportToExcel(stats, year) {
   const rows = [
-    ["#", "Name", "Übungen (Anz.)", "Übungen (Std.)", "Versammlungen (Anz.)", "Versammlungen (Std.)", "OSiSau (Anz.)", "OSiSau (Std.)", "JFW (Anz.)", "JFW (Std.)", "Kifeu (Anz.)", "Kifeu (Std.)", "Sonstiges (Anz.)", "Sonstiges (Std.)", "Gesamt", "Gesamtstunden"]
+    ["#", "Name", "Übungen (Anz.)", "Übungen (Std.)", "Versammlungen (Anz.)", "Versammlungen (Std.)", "OSiSau (Anz.)", "OSiSau (Std.)", "JFW (Anz.)", "JFW (Std.)", "Kifeu (Anz.)", "Kifeu (Std.)", "Veranstaltung (Anz.)", "Veranstaltung (Std.)", "Getränke (Anz.)", "Getränke (Std.)", "Lehrgang (Anz.)", "Lehrgang (Std.)", "Wettkampfgruppe (Anz.)", "Wettkampfgruppe (Std.)", "Sonstiges (Anz.)", "Sonstiges (Std.)", "Gesamt", "Gesamtstunden"]
   ];
   stats.forEach((m, i) => {
     rows.push([
@@ -232,6 +240,10 @@ function exportToExcel(stats, year) {
       m.osisau, parseFloat(m.osisauH.toFixed(1)),
       m.jfw, parseFloat(m.jfwH.toFixed(1)),
       m.kifeu, parseFloat(m.kifeuH.toFixed(1)),
+      m.veranstaltung, parseFloat(m.veranstaltungH.toFixed(1)),
+      m.getraenke, parseFloat(m.getraenkeH.toFixed(1)),
+      m.lehrgang, parseFloat(m.lehrgangH.toFixed(1)),
+      m.wettkampf, parseFloat(m.wettkampfH.toFixed(1)),
       m.sonstiges, parseFloat(m.sonstigesH.toFixed(1)),
       m.total, parseFloat(m.hours.toFixed(1))
     ]);
@@ -241,7 +253,7 @@ function exportToExcel(stats, year) {
 
   // Spaltenbreiten
   ws["!cols"] = [
-    {wch:4},{wch:22},{wch:14},{wch:13},{wch:18},{wch:18},{wch:13},{wch:13},{wch:11},{wch:11},{wch:13},{wch:13},{wch:16},{wch:16},{wch:9},{wch:14}
+    {wch:4},{wch:22},{wch:14},{wch:13},{wch:18},{wch:18},{wch:13},{wch:13},{wch:11},{wch:11},{wch:13},{wch:13},{wch:18},{wch:18},{wch:14},{wch:14},{wch:14},{wch:14},{wch:20},{wch:20},{wch:16},{wch:16},{wch:9},{wch:14}
   ];
 
   const wb = XLSX.utils.book_new();
@@ -402,7 +414,7 @@ function App() {
 
   const TYPE_LABELS = {
     uebung: "Übungsdienst", versammlung: "Dienstversammlung", osisau: "OSiSau",
-    jfw: "JFW", kifeu: "KiFeu", sonstiges: "Sonstiges",
+    jfw: "JFW", kifeu: "KiFeu", veranstaltung: "Veranstaltung", getraenke: "Getränke", lehrgang: "Lehrgang", wettkampf: "Wettkampfgruppe", sonstiges: "Sonstiges",
   };
 
   function showToast(msg, ok) {
@@ -603,6 +615,14 @@ function App() {
           jfwH: byType("jfw").reduce((s, e) => s + e.hours, 0),
           kifeu: byType("kifeu").length,
           kifeuH: byType("kifeu").reduce((s, e) => s + e.hours, 0),
+          veranstaltung: byType("veranstaltung").length,
+          veranstaltungH: byType("veranstaltung").reduce((s, e) => s + e.hours, 0),
+          getraenke: byType("getraenke").length,
+          getraenkeH: byType("getraenke").reduce((s, e) => s + e.hours, 0),
+          lehrgang: byType("lehrgang").length,
+          lehrgangH: byType("lehrgang").reduce((s, e) => s + e.hours, 0),
+          wettkampf: byType("wettkampf").length,
+          wettkampfH: byType("wettkampf").reduce((s, e) => s + e.hours, 0),
           sonstiges: byType("sonstiges").length,
           sonstigesH: byType("sonstiges").reduce((s, e) => s + e.hours, 0),
           total: attended.length,
@@ -951,7 +971,7 @@ function App() {
           {stats.length === 0 && <div style={S.empty}>Keine Daten vorhanden.</div>}
 
           <div style={{ overflowX: "auto", borderRadius: 12, border: "1px solid var(--border)", boxShadow: "var(--shadow)" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", background: "var(--surface)", minWidth: 860 }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", background: "var(--surface)", minWidth: 1380 }}>
               <thead>
                 <tr style={{ background: "var(--text)", color: "#fff" }}>
                   <th rowSpan={2} style={{ padding: "10px 14px", textAlign: "left", fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap", verticalAlign: "middle" }}>#</th>
@@ -962,6 +982,10 @@ function App() {
                     { label: "OSiSau", color: "#166534" },
                     { label: "JFW", color: "#B45309" },
                     { label: "Kifeu", color: "#0E7490" },
+                    { label: "Veranstaltung", color: "#BE185D" },
+                    { label: "Getränke", color: "#A16207" },
+                    { label: "Lehrgang", color: "#B91C1C" },
+                    { label: "Wettkampfgruppe", color: "#3730A3" },
                     { label: "Sonstiges", color: "#57534E" },
                   ].map(({ label, color }) => (
                     <th key={label} colSpan={2} style={{ padding: "10px 14px", textAlign: "center", fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap", borderLeft: "2px solid rgba(255,255,255,0.15)", color }}>
@@ -972,7 +996,7 @@ function App() {
                   <th rowSpan={2} style={{ padding: "10px 14px", textAlign: "left", fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap", verticalAlign: "middle" }}>Ges. Std.</th>
                 </tr>
                 <tr style={{ background: "#2a2724", color: "rgba(255,255,255,0.75)" }}>
-                  {["Anz.", "Std.", "Anz.", "Std.", "Anz.", "Std.", "Anz.", "Std.", "Anz.", "Std.", "Anz.", "Std."].map((h, i) => (
+                  {["Anz.", "Std.", "Anz.", "Std.", "Anz.", "Std.", "Anz.", "Std.", "Anz.", "Std.", "Anz.", "Std.", "Anz.", "Std.", "Anz.", "Std.", "Anz.", "Std.", "Anz.", "Std."].map((h, i) => (
                     <th key={i} style={{ padding: "6px 14px", fontSize: 11, fontWeight: 600, textAlign: "left", whiteSpace: "nowrap", borderLeft: i % 2 === 0 ? "2px solid rgba(255,255,255,0.1)" : undefined }}>{h}</th>
                   ))}
                 </tr>
@@ -992,6 +1016,14 @@ function App() {
                     <td style={{ ...S.td, color: "#B45309", fontWeight: 600 }}>{m.jfwH.toFixed(1)}h</td>
                     <td style={{ ...S.td, borderLeft: "2px solid var(--border)" }}>{m.kifeu}</td>
                     <td style={{ ...S.td, color: "#0E7490", fontWeight: 600 }}>{m.kifeuH.toFixed(1)}h</td>
+                    <td style={{ ...S.td, borderLeft: "2px solid var(--border)" }}>{m.veranstaltung}</td>
+                    <td style={{ ...S.td, color: "#BE185D", fontWeight: 600 }}>{m.veranstaltungH.toFixed(1)}h</td>
+                    <td style={{ ...S.td, borderLeft: "2px solid var(--border)" }}>{m.getraenke}</td>
+                    <td style={{ ...S.td, color: "#A16207", fontWeight: 600 }}>{m.getraenkeH.toFixed(1)}h</td>
+                    <td style={{ ...S.td, borderLeft: "2px solid var(--border)" }}>{m.lehrgang}</td>
+                    <td style={{ ...S.td, color: "#B91C1C", fontWeight: 600 }}>{m.lehrgangH.toFixed(1)}h</td>
+                    <td style={{ ...S.td, borderLeft: "2px solid var(--border)" }}>{m.wettkampf}</td>
+                    <td style={{ ...S.td, color: "#3730A3", fontWeight: 600 }}>{m.wettkampfH.toFixed(1)}h</td>
                     <td style={{ ...S.td, borderLeft: "2px solid var(--border)" }}>{m.sonstiges}</td>
                     <td style={{ ...S.td, color: "#57534E", fontWeight: 600 }}>{m.sonstigesH.toFixed(1)}h</td>
                     <td style={{ ...S.td, fontWeight: 700, borderLeft: "2px solid var(--border)" }}>{m.total}</td>
@@ -1076,6 +1108,10 @@ function App() {
             <option value="osisau">OSiSau</option>
             <option value="jfw">JFW</option>
             <option value="kifeu">Kifeu</option>
+            <option value="veranstaltung">Veranstaltung</option>
+            <option value="getraenke">Getränke</option>
+            <option value="lehrgang">Lehrgang</option>
+            <option value="wettkampf">Wettkampfgruppe</option>
             <option value="sonstiges">Sonstiges</option>
           </select>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
